@@ -1,19 +1,21 @@
 # encoding: utf-8
 
 class ResultPrinter
-  def initialize(path, game)
+  attr_accessor :version
+
+  def initialize(game)
     @status_image = []
 
     counter = 0
     while counter <= game.max_errors
-      file_name = path + "/image/#{counter}.txt"
+      file_name = File.dirname(__FILE__) + "/../image/#{counter}.txt"
 
       if File.exist?(file_name)
         file = File.new(file_name, "r:UTF-8")
         @status_image << file.read
         file.close
       else
-        # Если файла нет, вместо соответствующей картинки будет «заглушка»
+        # Если файла нет, вместо соответствующей картинки будет «заглушка».
         @status_image << "\n [ изображение не найдено ] \n"
       end
 
@@ -21,18 +23,18 @@ class ResultPrinter
     end
   end
 
-  def print_version(version)
-    puts "Игра \"Виселица\". Версия #{version}."
-    sleep 1
-  end
-
-  # Очищаем экран.
+  # Очищает экран.
   def cls
     system("cls") or system("clear")
   end
 
+  # Вывод версии программы.
+  def print_version(version)
+    "Игра \"Виселица\". Версия #{version}."
+  end
+
   # Рисуем виселицу.
-  def print_viselitsa(error)
+  def print_gallows(error)
     puts @status_image[error]
   end
 
@@ -61,12 +63,12 @@ class ResultPrinter
   # Выводим информацию о ходе игры.
   def print_status(game)
     cls
-
+    puts print_version(version)
     puts
     puts "#{get_word_for_print(game.hide_words, game.good_letters)}"
     puts "Ошибки: #{game.bad_letters.uniq.join(", ")}"
 
-    print_viselitsa(game.errors)
+    print_gallows(game.errors)
 
     message =
       if game.won?

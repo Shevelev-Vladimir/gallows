@@ -2,16 +2,14 @@
 
 class WordReader
   def get_word(input, file_path)
-  # Даём пользователю возможность загадать слово в командной строке.
-    if input != nil
-      hide_word = input
-    # Если слово в командной строке не загадано, то берём его из файла.
-    else
-      file = File.new(file_path, "r:UTF-8")
-      lines = file.readlines
-      file.close
+    # Даём пользователю возможность загадать слово в командной строке.
+    return input unless input.nil?
 
-      lines.sample.chomp.strip
-    end
+    # Если слово в командной строке не загадано,
+    return unless File.exist?(file_path)
+    # то берём его из файла.
+    lines = File.readlines(file_path, encoding: 'UTF-8')
+
+    lines.sample.chomp.strip
   end
 end

@@ -1,8 +1,12 @@
 # encoding: utf-8
 
+# Основной класс игры Game. Хранит состояние игры и предоставляет функции для
+# развития игры (ввод новых букв, подсчет кол-ва ошибок и т. п.).
 class Game
+  # Гетеры.
   attr_reader :status, :errors, :hide_words, :good_letters, :bad_letters
 
+  # Максимальное число ошибок.
   MAX_ERRORS = 7
 
   def initialize(hide_word)
@@ -13,12 +17,26 @@ class Game
     @status = :in_progress # :won, :lost
   end
 
-  # Метод, который возвращает загадываемое слово в виде массива строчных букв.
-  def get_hide_words(hide_word)
-    hide_word.split("")
+  def errors_left
+    MAX_ERRORS - @errors
   end
 
-  # Проверяем есть ли введённая пользователем буква в загаданном слове,
+  def max_errors
+    MAX_ERRORS
+  end
+
+  # Метод, который возвращает загадываемое слово в виде массива строчных букв.
+  def get_hide_words(hide_word)
+    if hide_word.nil? || hide_word == ''
+      abort 'Задано пустое слово, не о чем играть. Закрываемся.'
+    else
+      hide_word = hide_word.encode('UTF-8')
+    end
+
+    hide_word.downcase.split("")
+  end
+
+  # Проверяем есть ли введённая пользователем буква в загаданном слове.
   def is_good?(letter)
     @hide_words.include?(letter) ||
        letter == "е" && @hide_words.include?("ё") ||
@@ -27,24 +45,30 @@ class Game
        letter == "й" && @hide_words.include?("и")
   end
 
+  # добавить букву в массив
   def add_letter_to(letters, letter)
     letters << letter
 
     case letter
-    when "е" || "ё" then letters << "ё" << "е"
-    when "и" || "й" then letters << "й" << "и"
+    when 'и' then letters << 'й'
+    when 'й' then letters << 'и'
+    when 'е' then letters << 'ё'
+    when 'ё' then letters << 'е'
     end
   end
 
+  # Отгадано ли слово?
   def solved?
     (@hide_words - @good_letters).empty?
   end
 
+  # Ввод неправильный?
   def wrong_input?(letter)
     @good_letters.include?(letter) || @bad_letters.include?(letter) ||  \
       letter == "" || letter.size > 1
   end
 
+  # Игра продолжается?
   def in_progress?
     @status == :in_progress
   end
@@ -82,11 +106,12 @@ class Game
     end
   end
 
-  def errors_left
-    MAX_ERRORS - @errors
-  end
+  # Метод, который спрашивает у пользователя следующую букву
+  def ask_next_letter
+    puts "\nВведите следующую букву"
 
-  def max_errors
-    MAX_ERRORS
+    user_input = STDIN.gets.downcase.chomp.to_s
+
+    next_step(user_input)
   end
 end
