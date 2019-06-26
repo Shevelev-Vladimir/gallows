@@ -55,7 +55,7 @@ class ResultPrinter
 
     case number % 10
     when 1 then krokodil
-    when (2..4) then krokodila
+    when 2..4 then krokodila
     else krokodilov
     end
   end
