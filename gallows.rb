@@ -19,26 +19,35 @@ require_relative 'lib/game.rb'
 require_relative 'lib/result_printer.rb'
 require_relative 'lib/word_reader.rb'
 
-# Объявляем объект класса.
-word_reader = WordReader.new
-# Записываем в переменную путь от ЭТОГО файла до words.txt.
-words_file_name = File.dirname(__FILE__) + "/data/words.txt"
-# Получаем загадываемое слово либо из командной строки,
-# либо из файла со списком слов.
-hide_word = word_reader.get_word(ARGV[0], words_file_name)
+begin
+  # Объявляем объект класса.
+  word_reader = WordReader.new
+  # Записываем в переменную путь от ЭТОГО файла до words.txt.
+  words_file_name = File.dirname(__FILE__) + "/data/words.txt"
+  # Получаем загадываемое слово либо из командной строки,
+  # либо из файла со списком слов.
+  hide_word = word_reader.get_word(ARGV[0], words_file_name)
 
-# Объявляем объект класса.
-game = Game.new(hide_word)
+  # Объявляем объект класса.
+  game = Game.new(hide_word)
 
-# Объявляем объект класса.
-printer = ResultPrinter.new(game)
-printer.version = VERSION
+  # Объявляем объект класса.
+  printer = ResultPrinter.new(game)
+  printer.version = VERSION
 
-# Основная игра.
-while game.in_progress?
+  # Основная игра.
+  while game.in_progress?
+    printer.print_status(game)
+    game.ask_next_letter
+  end
+
+  # Выводим результат игры.
   printer.print_status(game)
-  game.ask_next_letter
-end
 
-# Выводим результат игры.
-printer.print_status(game)
+rescue SystemCallError => error
+  puts "Не найден файл: " + error.message
+rescue Interrupt
+  puts "Вы вышли из игры."
+rescue
+  puts "Что-то пошло не так..."
+end
