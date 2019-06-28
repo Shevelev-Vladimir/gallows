@@ -10,11 +10,11 @@ class ResultPrinter
     while counter <= game.max_errors
       file_name = File.dirname(__FILE__) + "/../image/#{counter}.txt"
 
-      if File.exist?(file_name)
+      begin
         file = File.new(file_name, "r:UTF-8")
         @status_image << file.read
         file.close
-      else
+      rescue SystemCallError
         # Если файла нет, вместо соответствующей картинки будет «заглушка».
         @status_image << "\n [ изображение не найдено ] \n"
       end
@@ -49,7 +49,7 @@ class ResultPrinter
     result
   end
 
-  # Метод склонятор из задания 9-5.
+  # Склонятор.
   def inflection(number, krokodil, krokodila, krokodilov)
     return krokodilov if (11..14).include?(number % 100)
 
