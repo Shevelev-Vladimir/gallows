@@ -42,6 +42,9 @@ class ResultPrinter
   def get_word_for_print(hide_words, good_letters)
     result = ""
 
+    # Тоже самое что и 48 - 50
+    hide_words.map { |l| good_letters.include?(l) ? "#{letter} " : "__ "}
+
     for letter in hide_words do
       result += good_letters.include?(letter) ? "#{letter} " : "__ "
     end
